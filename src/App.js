@@ -6,25 +6,50 @@ class App extends Component {
     profit: null,
     marginality: null,
     income: null,
+    totalSale: null,
+    bill: null,
   };
 
-  handleChange = (e) => {
+  handleChange = async (e) => {
     const { name, value } = e.currentTarget;
-    this.setState({ [name]: +value });
+    await this.setState({ [name]: Number(value) });
+    this.incomeSum();
+    this.totalSale();
   };
 
-  // handleIncome = () => {
-  //   const sum = (this.state.profit / this.state.marginality) * 100;
-  //   console.log(sum);
-  //   this.setState({
-  //     income: sum,
-  //   });
-  // };
+  incomeSum = () => {
+    const { profit, marginality } = this.state;
+    if (profit && marginality) {
+      console.log(marginality);
+
+      const sum = (profit / marginality) * 100;
+      console.log(sum);
+
+      this.setState({
+        income: sum,
+      });
+    } else if (profit === 0 || marginality === 0) {
+      this.setState({
+        income: null,
+      });
+    }
+  };
+
+  totalSale = () => {
+    if (this.state.income && this.state.bill) {
+      const total = this.state.income / this.state.bill;
+      this.setState({
+        totalSale: Math.round(total),
+      });
+    }
+  };
+
   render() {
+    const { income, totalSale } = this.state;
     return (
-      <>
+      <div className="container">
         <form type="submit">
-          <label>
+          <label className="inputLabel">
             Валовая прибыль
             <input
               type="number"
@@ -34,7 +59,7 @@ class App extends Component {
               required
             />
           </label>
-          <label>
+          <label className="inputLabel">
             Маржинальность, в %
             <input
               type="number"
@@ -42,35 +67,45 @@ class App extends Component {
               onChange={this.handleChange}
             />
           </label>
-          <label>
+          <label className="inputLabel">
             Валовый доход (Оборот)
-            <input type="number" name="income" onChange={this.handleChange} />
+            <input
+              type="number"
+              name="income"
+              value={income ? income : ""}
+              disabled
+            />
           </label>
           <label>
             Средний чек
             <input type="number" name="bill" onChange={this.handleChange} />
           </label>
           <label>
-            Цена клиента
+            Количество заказов
             <input
               type="number"
-              name="costClient"
-              onChange={this.handleChange}
+              name="totalSale"
+              value={totalSale ? totalSale : ""}
+              disabled
             />
           </label>
           <label>
+            Количество лидов
+            <input
+              type="number"
+              name="totalLeads"
+              onChange={this.handleChange}
+            />
+          </label>
+          <label className="inputLabel">
             Конверсия отдела продаж
             <input type="number" name="cvSales" onChange={this.handleChange} />
           </label>
-          <label>
+          <label className="inputLabel">
             Коверсия сайта
             <input type="number" name="cvSite" onChange={this.handleChange} />
           </label>
-          <label>
-            Цена лида
-            <input type="number" name="costLead" onChange={this.handleChange} />
-          </label>
-          <label>
+          <label className="inputLabel">
             Цена клика
             <input
               type="number"
@@ -78,7 +113,7 @@ class App extends Component {
               onChange={this.handleChange}
             />
           </label>
-          <label>
+          <label className="inputLabel">
             Необходимое количество трафика
             <input
               type="number"
@@ -86,15 +121,29 @@ class App extends Component {
               onChange={this.handleChange}
             />
           </label>
-          <label>
+          <label className="inputLabel">
             Стоимость рекламы
             <input type="number" name="costAds" onChange={this.handleChange} />
           </label>
+          <label className="inputLabel">
+            Цена лида
+            <input type="number" name="costLead" onChange={this.handleChange} />
+          </label>
+          <label className="inputLabel">
+            Цена клиента
+            <input
+              type="number"
+              name="costClient"
+              onChange={this.handleChange}
+            />
+          </label>
         </form>
         <ul>
-          <li>{this.state.profit}</li>
+          {this.state.profit && <li>{this.state.profit}</li>}
+          {this.state.marginality && <li>{this.state.marginality}</li>}
+          {this.state.income && <li>{this.state.income}</li>}
         </ul>
-      </>
+      </div>
     );
   }
 }
